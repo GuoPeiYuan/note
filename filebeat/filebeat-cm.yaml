@@ -1,0 +1,56 @@
+apiVersion: v1
+data:
+  filebeat.yml: |
+    filebeat.inputs:
+    - type: container
+      tail_files: true
+      paths:
+        - /var/log/containers/*.log
+      multiline.type: pattern
+      multiline.pattern: '^\d{4}-\d{2}-\d{2}'
+      multiline.negate: true
+      multiline.match: after
+      processors:
+      - add_kubernetes_metadata:
+         in_cluster: true
+         matchers:
+          - logs_path:
+              logs_path: "/var/log/containers/"
+      - drop_event:
+          when:
+            not: 
+              equals:
+                kubernetes.labels.app: glib-eql-engine-2-0
+    - type: container
+      tail_files: true
+      paths:
+        - /var/log/containers/*mysql*.log
+        - /var/log/containers/*_logging_*.log
+        - /var/log/containers/*_monitoring_*.log
+        - /var/log/containers/nacos*.log
+        - /var/log/containers/nfs*.log
+        - /var/log/containers/flume*.log
+        - /var/log/containers/azkaban*.log
+        - /var/log/containers/zk*.log
+        - /var/log/containers/_default_*.log
+        - /var/log/containers/mongo*.log
+        - /var/log/containers/harbor*.log
+        - /var/log/containers/*redis*.log
+        - /var/log/containers/*_kube-system_*.log
+        - /var/log/containers/*_argocd_*.log
+        - /var/log/containers/*_ingress-nginx_.log
+      processors:
+      - add_kubernetes_metadata:
+         in_cluster: true
+         matchers:
+          - logs_path:
+              logs_path: "/var/log/containers/"
+    output.logstash:
+      hosts: ["logstash-logstash:5044"]
+kind: ConfigMap
+metadata:
+  labels:
+    app: filebeat-filebeat
+  name: filebeat-filebeat-config
+  namespace: logging
+

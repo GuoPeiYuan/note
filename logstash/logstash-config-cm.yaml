@@ -1,0 +1,14 @@
+apiVersion: v1
+data:
+  logstash.yml: |
+    http.host: "0.0.0.0"
+    xpack.monitoring.elasticsearch.hosts: "http://elasticsearch-master:9200"
+    xpack.monitoring.elasticsearch.username: "elastic"
+    xpack.monitoring.elasticsearch.password: "iwgame"
+kind: ConfigMap
+metadata:
+  labels:
+    app: logstash-logstash
+  name: logstash-logstash-config
+  namespace: logging
+

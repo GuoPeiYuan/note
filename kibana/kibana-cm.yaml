@@ -1,0 +1,13 @@
+apiVersion: v1
+data:
+  kibana.yml: |
+    server.port: 5601
+    server.host: "0.0.0.0"
+    elasticsearch.hosts: [ "http://elasticsearch-master:9200" ]
+    i18n.locale: "zh-CN"
+kind: ConfigMap
+metadata:
+  labels:
+    app: kibana
+  name: kibana-kibana-config
+  namespace: logging
