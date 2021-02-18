@@ -4,7 +4,7 @@ data:
     http.host: "0.0.0.0"
     xpack.monitoring.elasticsearch.hosts: "http://elasticsearch-master:9200"
     xpack.monitoring.elasticsearch.username: "elastic"
-    xpack.monitoring.elasticsearch.password: "iwgame"
+    xpack.monitoring.elasticsearch.password: "123"
 kind: ConfigMap
 metadata:
   labels:

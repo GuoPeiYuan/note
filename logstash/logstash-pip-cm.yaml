@@ -7,21 +7,33 @@ data:
       }
     }
     filter {
-      grok {
-        match => { "message" => "%{TIMESTAMP_ISO8601:log_time}\|%{GREEDYDATA:log_level}\|%{GREEDYDATA:log_app}\|%{GREEDYDATA:log_pid}\|%{GREEDYDATA:log_thread}\|%{GREEDYDATA:log_class}\|%{GREEDYDATA:log_message}"}
+      if [kubernetes][labels][log] == "v1" {
+        grok {
+          match => { "message" => "%{TIMESTAMP_ISO8601:log_time}\|%{NOTVLINE:log_level}\|%{NOTVLINE:log_app}\|%{NOTVLINE:log_pid}\|%{NOTVLINE:log_thread}\|%{NOTVLINE:log_class}\|%{GREEDYDATA:log_message}"}
+        }
       }
     }
     output {
-      elasticsearch {
-        hosts => ["elasticsearch-master:9200"]
-        index => "test-%{+YYYY.MM.dd}"
-        user => "elastic"
-        password => "iwgame"
-      }      
-    }
+      if [kubernetes][labels][log] == "v1" {
+        elasticsearch {
+          hosts => ["elasticsearch-master:9200"]
+          index => "kubernetes-app-%{+YYYY.MM.dd}"
+          user => "elastic"
+          password => "123"
+        }
+       } else {
+          elasticsearch {
+          hosts => ["elasticsearch-master:9200"]
+          index => "kubernetes-soft-%{+YYYY.MM.dd}"
+          user => "elastic"
+          password => "123"
+          }
+        }                      
+     }
 kind: ConfigMap
 metadata:
   labels:
     app: logstash-logstash
   name: logstash-logstash-pipeline
   namespace: logging
+
